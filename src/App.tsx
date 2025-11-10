@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
 import { AppShell } from "./layout";
 import Emotions from "./pages/Emotions";
 import StressResponse from "./pages/StressResponse";
@@ -9,13 +8,16 @@ import SomaticExercises from "./pages/SomaticExercises";
 import Technique from "./pages/Technique";
 import Affirmations from "./pages/Affimrations";
 import Burnout from "./pages/Burnout";
+import Wellbeing from "./pages/Wellbeing";
+import { Home } from "./pages/Home";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<AppShell />}>
-          <Route index element={<Home />} />
+          <Route index path="/" element={<Home />} />
+          <Route path="/well-being" element={<Wellbeing />} />
           <Route path="/emotions" element={<Emotions />} />
           <Route path="/stress" element={<StressResponse />} />
           <Route path="/somatic-reponse" element={<SomaticResponses />} />

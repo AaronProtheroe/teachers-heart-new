@@ -14,6 +14,7 @@ import {
   IconHealthRecognition,
   IconHeart,
   IconHeartRateMonitor,
+  IconHome,
   IconMoodLookDown,
   IconNavigationHeart,
   IconPencil,
@@ -28,7 +29,8 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { to: "/", name: "Well-being", icon: IconHealthRecognition },
+  { to: "/", name: "Home", icon: IconHome },
+  { to: "/well-being", name: "Well-being", icon: IconHealthRecognition },
   { to: "/emotions", name: "Emotions", icon: IconHeart },
   { to: "/stress", name: "Stress", icon: IconHeartRateMonitor },
   { to: "/somatic-reponse", name: "Somatic Response", icon: IconMoodLookDown },
