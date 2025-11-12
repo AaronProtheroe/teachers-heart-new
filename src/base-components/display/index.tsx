@@ -23,7 +23,7 @@ import {
 import { useState } from "react";
 
 type DisplayProps = {
-  img: string | string[]; // ✅ can be single string or array
+  img: string | string[];
   text: string;
   title: string;
 };
@@ -31,7 +31,7 @@ type DisplayProps = {
 export function Display({ img, text, title }: DisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeImage, setActiveImage] = useState<string | null>(null); // ✅ track which image to show in modal
+  const [activeImage, setActiveImage] = useState<string | null>(null);
   const shouldShowToggle = text.length > 150;
 
   const handleDownload = async (imageUrl: string, index?: number) => {
@@ -53,7 +53,6 @@ export function Display({ img, text, title }: DisplayProps) {
     }
   };
 
-  // ✅ Always work with an array internally
   const images = Array.isArray(img) ? img : [img];
 
   return (
@@ -80,7 +79,6 @@ export function Display({ img, text, title }: DisplayProps) {
           border="1px"
           borderColor="gray.100"
         >
-          {/* Title and text */}
           <VStack gap={2} w="100%">
             <Text
               fontSize={{ base: "2xl", md: "3xl" }}
@@ -139,7 +137,6 @@ export function Display({ img, text, title }: DisplayProps) {
             )}
           </VStack>
 
-          {/* ✅ Image list rendering */}
           {images.map((imageUrl, index) => (
             <VStack key={index} gap={3}>
               <Box
@@ -201,7 +198,6 @@ export function Display({ img, text, title }: DisplayProps) {
         </VStack>
       </Box>
 
-      {/* ✅ Modal for viewing images */}
       <DialogRoot
         open={isModalOpen}
         onOpenChange={(e) => setIsModalOpen(e.open)}
