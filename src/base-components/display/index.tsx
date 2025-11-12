@@ -23,7 +23,7 @@ import {
 import { useState } from "react";
 
 type DisplayProps = {
-  img: string;
+  img: string | string[]; // ✅ can be single string or array
   text: string;
   title: string;
 };
@@ -31,16 +31,19 @@ type DisplayProps = {
 export function Display({ img, text, title }: DisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeImage, setActiveImage] = useState<string | null>(null); // ✅ track which image to show in modal
   const shouldShowToggle = text.length > 150;
 
-  const handleDownload = async () => {
+  const handleDownload = async (imageUrl: string, index?: number) => {
     try {
-      const response = await fetch(img);
+      const response = await fetch(imageUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${title.replace(/\s+/g, "-").toLowerCase()}.png`;
+      link.download = `${title.replace(/\s+/g, "-").toLowerCase()}${
+        index !== undefined ? `-${index + 1}` : ""
+      }.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -49,6 +52,9 @@ export function Display({ img, text, title }: DisplayProps) {
       console.error("Error downloading image:", error);
     }
   };
+
+  // ✅ Always work with an array internally
+  const images = Array.isArray(img) ? img : [img];
 
   return (
     <>
@@ -62,7 +68,7 @@ export function Display({ img, text, title }: DisplayProps) {
         p={{ base: 4, md: 6 }}
       >
         <VStack
-          gap={{ base: 4, md: 6 }}
+          gap={{ base: 6, md: 8 }}
           align="center"
           textAlign="center"
           bg="white"
@@ -74,6 +80,7 @@ export function Display({ img, text, title }: DisplayProps) {
           border="1px"
           borderColor="gray.100"
         >
+          {/* Title and text */}
           <VStack gap={2} w="100%">
             <Text
               fontSize={{ base: "2xl", md: "3xl" }}
@@ -85,6 +92,7 @@ export function Display({ img, text, title }: DisplayProps) {
             >
               {title}
             </Text>
+
             <Box position="relative" w="100%">
               <Box
                 position="relative"
@@ -113,6 +121,7 @@ export function Display({ img, text, title }: DisplayProps) {
                 />
               )}
             </Box>
+
             {shouldShowToggle && (
               <Button
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -130,59 +139,69 @@ export function Display({ img, text, title }: DisplayProps) {
             )}
           </VStack>
 
-          <Box
-            position="relative"
-            p={{ base: 3, md: 4 }}
-            bg="gray.50"
-            rounded="2xl"
-            border="2px"
-            borderColor="gray.200"
-            transition="all 0.2s"
-            _hover={{
-              shadow: "lg",
-              borderColor: "blue.300",
-              cursor: "pointer",
-              transform: "scale(1.02)",
-            }}
-            w="100%"
-            maxW={{ base: "280px", md: "320px" }}
-            onClick={() => setIsModalOpen(true)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setIsModalOpen(true);
-              }
-            }}
-          >
-            <Image
-              src={img}
-              alt={title}
-              boxSize={{ base: "200px", md: "240px" }}
-              objectFit="contain"
-              mx="auto"
-            />
-          </Box>
+          {/* ✅ Image list rendering */}
+          {images.map((imageUrl, index) => (
+            <VStack key={index} gap={3}>
+              <Box
+                position="relative"
+                p={{ base: 3, md: 4 }}
+                bg="gray.50"
+                rounded="2xl"
+                border="2px"
+                borderColor="gray.200"
+                transition="all 0.2s"
+                _hover={{
+                  shadow: "lg",
+                  borderColor: "blue.300",
+                  cursor: "pointer",
+                  transform: "scale(1.02)",
+                }}
+                w="100%"
+                maxW={{ base: "280px", md: "320px" }}
+                onClick={() => {
+                  setActiveImage(imageUrl);
+                  setIsModalOpen(true);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setActiveImage(imageUrl);
+                    setIsModalOpen(true);
+                  }
+                }}
+              >
+                <Image
+                  src={imageUrl}
+                  alt={`${title} ${index + 1}`}
+                  boxSize={{ base: "200px", md: "240px" }}
+                  objectFit="contain"
+                  mx="auto"
+                />
+              </Box>
 
-          <Flex gap={3} w="100%" justify="center">
-            <Button
-              onClick={handleDownload}
-              bg="#eab308"
-              size={{ base: "md", md: "lg" }}
-              flex={1}
-              shadow="sm"
-              _hover={{ shadow: "md", transform: "translateY(-2px)" }}
-              transition="all 0.2s"
-              maxW={60}
-            >
-              <IconDownload />
-              Download Image
-            </Button>
-          </Flex>
+              <Flex gap={3} w="100%" justify="center">
+                <Button
+                  onClick={() => handleDownload(imageUrl, index)}
+                  bg="#eab308"
+                  size={{ base: "md", md: "lg" }}
+                  flex={1}
+                  shadow="sm"
+                  _hover={{ shadow: "md", transform: "translateY(-2px)" }}
+                  transition="all 0.2s"
+                  maxW={60}
+                >
+                  <IconDownload />
+                  Download Image
+                </Button>
+              </Flex>
+            </VStack>
+          ))}
         </VStack>
       </Box>
 
+      {/* ✅ Modal for viewing images */}
       <DialogRoot
         open={isModalOpen}
         onOpenChange={(e) => setIsModalOpen(e.open)}
@@ -193,14 +212,16 @@ export function Display({ img, text, title }: DisplayProps) {
             <DialogContent maxW={{ base: "95vw", md: "800px" }}>
               <DialogCloseTrigger />
               <DialogBody p={{ base: 4, md: 6 }}>
-                <Image
-                  src={img}
-                  alt={title}
-                  maxW="100%"
-                  maxH="60vh"
-                  objectFit="contain"
-                  mx="auto"
-                />
+                {activeImage && (
+                  <Image
+                    src={activeImage}
+                    alt={title}
+                    maxW="100%"
+                    maxH="60vh"
+                    objectFit="contain"
+                    mx="auto"
+                  />
+                )}
               </DialogBody>
             </DialogContent>
           </DialogPositioner>

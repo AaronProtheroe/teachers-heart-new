@@ -1,12 +1,13 @@
 import { Display } from "@/base-components";
 import { Box } from "@chakra-ui/react";
-import img from "../assets/1.png";
+import img from "../assets/2.png";
+import img2 from "../assets/3.png";
 
 const SomaticExercises = () => {
   return (
     <Box>
       <Display
-        img={img}
+        img={[img, img2]}
         title="Somatic Exercises to Aid Emotional Regulation"
         text="Processing emotions does not only happen cognitively (top-down), but also physically
 (bottom-up). Emotions are experienced in the body as much as in the psyche, so regulating

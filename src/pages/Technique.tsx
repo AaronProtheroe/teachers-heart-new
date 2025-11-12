@@ -7,7 +7,7 @@ const Technique = () => {
     <Box>
       <Display
         img={img}
-        title="The5-4-3-2-1 Technique"
+        title="The 5-4-3-2-1 Technique"
         text="The 5-4-3-2-1 technique is a simple but powerful grounding exercise that helps calm the
 body and mind during moments of stress or overwhelm.
 By identifying 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1
